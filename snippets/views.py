@@ -18,6 +18,8 @@ from rest_framework import renderers
 from rest_framework.response import Response
 from rest_framework import viewsets
 from rest_framework.decorators import detail_route
+import django_filters.rest_framework
+from rest_framework.filters import OrderingFilter
 
 @api_view(['GET'])
 def api_root(request, format=None):
@@ -32,6 +34,7 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 	"""
 	queryset = User.objects.all()
 	serializer_class = UserSerializer
+	filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
 
 
 class SnippetViewSet(viewsets.ModelViewSet):
@@ -43,6 +46,13 @@ class SnippetViewSet(viewsets.ModelViewSet):
     """
     queryset = Snippet.objects.all()
     serializer_class = SnippetSerializer
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend, OrderingFilter,)
+    #filter_fields = ('title', 'code')
+    #ordering_fields = ('id', 'title', 'code')
+    filter_fields = '__all__'
+    ordering_fields = '__all__'
+    ordering = ('-code',)
+
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
 
